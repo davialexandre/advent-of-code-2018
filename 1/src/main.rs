@@ -1,5 +1,4 @@
 use std::fs;
-use std::io::Error;
 use std::collections::HashSet;
 
 fn main() {
@@ -12,11 +11,7 @@ fn main() {
 fn part_1() -> i32 {
     let input = get_input();
 
-    if let Ok(v) = input {
-        return v.lines().fold(0, |acc, line| acc + line.parse::<i32>().unwrap());
-    }
-
-    0
+    return input.lines().fold(0, |acc, line| acc + line.parse::<i32>().unwrap());
 }
 
 /// Cycles through the frequency changes in the array until finding a frequency that repeats twice
@@ -41,14 +36,10 @@ fn part_2() -> i32 {
 
     frequencies.insert(current_frequency);
 
-    if let Ok(v) = input {
-        loop {
-            for line in v.lines() {
-                current_frequency = current_frequency + line.parse::<i32>().unwrap();
-                if !frequencies.insert(current_frequency) {
-                    return current_frequency;
-                }
-            }
+    for line in input.lines().cycle() {
+        current_frequency = current_frequency + line.parse::<i32>().unwrap();
+        if !frequencies.insert(current_frequency) {
+            return current_frequency;
         }
     }
 
@@ -56,6 +47,9 @@ fn part_2() -> i32 {
 }
 
 /// Get the contents of the input file as a String
-fn get_input() -> Result<String, Error> {
-    fs::read_to_string("input")
+fn get_input() -> String {
+    match fs::read_to_string("input") {
+        Ok(v) => return v,
+        _ => String::new()
+    }
 }
