@@ -3,6 +3,7 @@ use std::collections::HashMap;
 
 fn main() {
     println!("Part 1 solution: {}", part_1());
+    println!("Part 2 solution: {}", part_2());
 }
 
 /// To make sure you didn't miss any, you scan the likely candidate boxes again, counting the number
@@ -48,6 +49,67 @@ fn part_1() -> i32 {
     }
 
     boxes_with_2 * boxes_with_3
+}
+
+/// Finds the only two boxes wich the diff between their IDs will be 1
+///
+/// The boxes will have IDs which differ by exactly one character at the same position in both
+/// strings. For example, given the following box IDs:
+///
+/// abcde
+/// fghij
+/// klmno
+/// pqrst
+/// fguij
+/// axcye
+/// wvxyz
+///
+/// The IDs abcde and axcye are close, but they differ by two characters (the second and fourth).
+/// However, the IDs fghij and fguij differ by exactly one character, the third (h and u). Those
+/// must be the correct boxes.
+fn part_2() -> String {
+    let input = get_input();
+
+    let mut labels: Vec<String> = Vec::new();
+    for line in input.lines() {
+        labels.push(String::from(line))
+    }
+
+    labels.sort();
+    let mut i = 0;
+    while i < labels.len() -1 {
+        match diff_words(&labels[i], &labels[i + 1]) {
+            StringDiff { difference: 1, equal } => return equal,
+            _ => (),
+        }
+        i += 1
+    }
+
+    String::new()
+}
+
+/// Compares the two Strings and returns a StringDiff struct representing the diff between them
+fn diff_words(str1: &str, str2: &str) -> StringDiff {
+    let mut difference = 0;
+    let mut equal = String::new();
+
+    for pair in str1.chars().zip(str2.chars()) {
+        if pair.0 == pair.1 {
+            equal.push_str(&pair.0.to_string())
+        } else {
+            difference += 1
+        }
+    }
+
+    StringDiff { difference: difference, equal: equal }
+}
+
+/// Represents the difference between two Strings.
+/// difference will the number of difference chars between the two
+/// equal will be a string  with all the equal chars
+struct StringDiff {
+    difference: i32,
+    equal: String
 }
 
 /// Get the contents of the input file as a String
